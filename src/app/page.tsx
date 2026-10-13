@@ -1,3 +1,4 @@
+import { socialLinks } from "@/data/socialLinks";
 import Link from "next/link";
 import Image from "next/image";
 import { projects } from "@/data/projects";
