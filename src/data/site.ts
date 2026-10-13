@@ -3,5 +3,5 @@ export const siteConfig = {
   brand: "RoadblockCodes",
   philosophy: "We learn. We fail. We fix. We grow.",
   description: "Software Engineering Student | Web Developer | Machine Learning Practitioner",
-  url: "https://deng-roadblock.vercel.app", // Update this when you get your Vercel URL
+  url: "https://deng-roadblock-portfolio.vercel.app", // <--- Updated here
 };
