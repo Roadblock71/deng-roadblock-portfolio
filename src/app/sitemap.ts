@@ -1,0 +1,21 @@
+import { MetadataRoute } from 'next';
+import { siteConfig } from '@/data/site';
+import { projects } from '@/data/projects';
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  const routes = ['', '/about', '/projects', '/writing', '/contact'].map((route) => ({
+    url: `${siteConfig.url}${route}`,
+    lastModified: new Date().toISOString(),
+    changeFrequency: 'monthly' as const,
+    priority: route === '' ? 1 : 0.8,
+  }));
+
+  const projectRoutes = projects.map((project) => ({
+    url: `${siteConfig.url}/projects/${project.slug}`,
+    lastModified: new Date().toISOString(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+  }));
+
+  return [...routes, ...projectRoutes];
+}
