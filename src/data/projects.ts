@@ -85,22 +85,26 @@ export const projects: Project[] = [
       "This is a prototype. It is not licensed, bank-integrated, commercially deployed, or processing real financial transactions.",
     ],
   },
-  {
+    {
     slug: "cpp-hotel-management",
     title: "C++ Hotel Management System",
     category: "Software Development | C++",
-    shortDescription: "A practical programming project applying C++ fundamentals to a management-system problem.",
+    shortDescription: "A console-based application applying C++ fundamentals to manage hotel operations.",
     description: [
-      "A C++ hotel management system developed as a practical programming project. It demonstrates experience applying programming fundamentals to a management-system problem.",
+      "A C++ Hotel Management System developed as a practical programming project. It demonstrates experience applying programming fundamentals, data structures, and file handling to solve a real-world management-system problem.",
+      "This is a console-based application that runs in the terminal, allowing users to manage room bookings, customer records, and checkout processes."
     ],
     technologies: ["C++"],
     highlights: [
-      "Applied programming fundamentals (loops, conditionals, file I/O)",
-      "Management system logic",
+      "Applied programming fundamentals (loops, conditionals, functions)",
+      "Data management using structs/classes and file I/O",
+      "Interactive terminal menu system",
     ],
-    imageUrl: "/images/projects/cpp-hotel.jpg", // Placeholder
+    imageUrl: "/images/projects/cpp-hotel.jpg",
+    // I removed liveUrl and repoUrl. 
+    // Our code is smart: if these are missing, the buttons automatically hide!
     limitations: [
-      "Feature list and screenshots will be added upon verification.",
+      "This is a console-based application. It does not have a graphical user interface (GUI) or web deployment.",
     ],
   },
 ];
