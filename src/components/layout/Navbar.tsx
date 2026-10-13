@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { siteConfig } from "@/data/site";
@@ -20,10 +21,17 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-slate-800 bg-background/80 backdrop-blur-md">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+        
+        {/* Logo Link */}
         <Link href="/" className="flex items-center gap-2" aria-label="Home">
-          <span className="text-xl font-bold text-primary tracking-tight">
-            {siteConfig.brand}
-          </span>
+          <Image
+            src="/images/logo.png"
+            alt="Deng Roadblock Logo"
+            width={160}
+            height={40}
+            className="h-10 w-auto object-contain"
+            priority
+          />
         </Link>
 
         {/* Desktop Nav */}
