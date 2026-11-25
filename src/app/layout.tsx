@@ -14,9 +14,11 @@ export async function generateMetadata(): Promise<Metadata> {
   const supabase = await createServerSupabase();
   const { data } = await supabase.from("site_config").select("value").eq("key", "profile_image_url").single();
   
-  // Fallback to your logo if no profile picture is uploaded yet
-  const ogImage = data?.value || "/images/logo.png"; 
-  const siteUrl = "https://deng-roadblock-portfolio.vercel.app"; // Update this if you get a custom domain
+  // 1. Define siteUrl FIRST
+  const siteUrl = "https://deng-roadblock-portfolio.vercel.app"; 
+  
+  // 2. Then use it for the dynamic OG image route
+  const ogImage = `${siteUrl}/og`; 
 
   return {
     title: {
@@ -32,8 +34,9 @@ export async function generateMetadata(): Promise<Metadata> {
       images: [
         {
           url: ogImage,
-          width: 800,
-          height: 800,
+          // 3. Update dimensions to match the 1200x630 generator
+          width: 1200, 
+          height: 630,
           alt: `${siteConfig.name} Profile Picture`,
         },
       ],
