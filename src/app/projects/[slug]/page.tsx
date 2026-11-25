@@ -1,4 +1,4 @@
-import { projects } from "@/data/projects";
+import { createServerSupabase } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -7,18 +7,19 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
-export function generateStaticParams() {
-  return projects.map((project) => ({
-    slug: project.slug,
-  }));
-}
-
 export default async function ProjectDetailPage({ params }: Props) {
-  // Await the params Promise (Next.js 15/16 requirement)
   const { slug } = await params;
-  const project = projects.find((p) => p.slug === slug);
+  const supabase = await createServerSupabase();
+  
+  // Fetch this specific project from the database by its slug
+  const { data: project, error } = await supabase
+    .from("projects")
+    .select("*")
+    .eq("slug", slug)
+    .single();
 
-  if (!project) {
+  // If it doesn't exist in the DB, show the 404 page
+  if (!project || error) {
     notFound();
   }
 
@@ -39,26 +40,26 @@ export default async function ProjectDetailPage({ params }: Props) {
             </span>
           )}
         </div>
-        
+
         <h1 className="text-3xl md:text-5xl font-bold text-white mb-6">{project.title}</h1>
-        
+
         <div className="flex flex-wrap gap-4 mb-8">
-          {project.liveUrl && (
-            <Link href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="px-5 py-2.5 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition-colors">
+          {project.live_url && (
+            <Link href={project.live_url} target="_blank" rel="noopener noreferrer" className="px-5 py-2.5 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition-colors">
               Live Demo
             </Link>
           )}
-          {project.repoUrl && (
-            <Link href={project.repoUrl} target="_blank" rel="noopener noreferrer" className="px-5 py-2.5 rounded-lg border border-slate-700 text-slate-300 font-medium hover:bg-slate-800 transition-colors">
+          {project.repo_url && (
+            <Link href={project.repo_url} target="_blank" rel="noopener noreferrer" className="px-5 py-2.5 rounded-lg border border-slate-700 text-slate-300 font-medium hover:bg-slate-800 transition-colors">
               View Source Code
             </Link>
           )}
         </div>
 
-        {project.imageUrl && (
+        {project.image_url && (
           <div className="rounded-2xl overflow-hidden border border-slate-800 mb-12 bg-slate-900 flex items-center justify-center min-h-[300px]">
             <Image
-              src={project.imageUrl}
+              src={project.image_url}
               alt={`${project.title} screenshot`}
               width={800}
               height={450}
@@ -69,32 +70,36 @@ export default async function ProjectDetailPage({ params }: Props) {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           <div className="md:col-span-2 space-y-8">
-            <section>
-              <h2 className="text-2xl font-bold text-white mb-4">Overview</h2>
-              {project.description.map((paragraph, index) => (
-                <p key={index} className="text-slate-300 leading-relaxed mb-4">
-                  {paragraph}
-                </p>
-              ))}
-            </section>
-
-            <section>
-              <h2 className="text-2xl font-bold text-white mb-4">Key Features & Highlights</h2>
-              <ul className="space-y-3">
-                {project.highlights.map((highlight, index) => (
-                  <li key={index} className="flex items-start gap-3 text-slate-300">
-                    <span className="text-primary mt-1">▹</span>
-                    <span>{highlight}</span>
-                  </li>
+            {project.description && project.description.length > 0 && (
+              <section>
+                <h2 className="text-2xl font-bold text-white mb-4">Overview</h2>
+                {project.description.map((paragraph: string, index: number) => (
+                  <p key={index} className="text-slate-300 leading-relaxed mb-4">
+                    {paragraph}
+                  </p>
                 ))}
-              </ul>
-            </section>
+              </section>
+            )}
+
+            {project.highlights && project.highlights.length > 0 && (
+              <section>
+                <h2 className="text-2xl font-bold text-white mb-4">Key Features & Highlights</h2>
+                <ul className="space-y-3">
+                  {project.highlights.map((highlight: string, index: number) => (
+                    <li key={index} className="flex items-start gap-3 text-slate-300">
+                      <span className="text-primary mt-1">▪</span>
+                      <span>{highlight}</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
 
             {project.limitations && project.limitations.length > 0 && (
               <section>
                 <h2 className="text-2xl font-bold text-white mb-4">Known Limitations</h2>
                 <ul className="space-y-3">
-                  {project.limitations.map((limitation, index) => (
+                  {project.limitations.map((limitation: string, index: number) => (
                     <li key={index} className="flex items-start gap-3 text-slate-400 text-sm">
                       <span className="text-slate-500 mt-1">•</span>
                       <span>{limitation}</span>
@@ -109,7 +114,7 @@ export default async function ProjectDetailPage({ params }: Props) {
             <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6 sticky top-24">
               <h3 className="text-lg font-semibold text-white mb-4">Technologies Used</h3>
               <div className="flex flex-wrap gap-2">
-                {project.technologies.map((tech) => (
+                {project.tech_stack.map((tech: string) => (
                   <span key={tech} className="text-xs text-slate-300 bg-slate-800 px-3 py-1.5 rounded-full">
                     {tech}
                   </span>
