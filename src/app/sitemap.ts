@@ -1,21 +1,45 @@
-import { MetadataRoute } from 'next';
-import { siteConfig } from '@/data/site';
-import { projects } from '@/data/projects';
+import { MetadataRoute } from 'next'
+import { createServerSupabase } from '@/lib/supabase/server'
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const routes = ['', '/about', '/projects', '/writing', '/contact'].map((route) => ({
-    url: `${siteConfig.url}${route}`,
-    lastModified: new Date().toISOString(),
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const baseUrl = 'https://deng-roadblock-portfolio.vercel.app'
+  
+  // Fetch your projects so Google indexes every single one
+  const supabase = await createServerSupabase()
+  const { data: projects } = await supabase.from('projects').select('slug, updated_at')
+
+  const projectUrls = (projects || []).map((project) => ({
+    url: `${baseUrl}/projects/${project.slug}`,
+    lastModified: project.updated_at ? new Date(project.updated_at) : new Date(),
     changeFrequency: 'monthly' as const,
-    priority: route === '' ? 1 : 0.8,
-  }));
+    priority: 0.8,
+  }))
 
-  const projectRoutes = projects.map((project) => ({
-    url: `${siteConfig.url}/projects/${project.slug}`,
-    lastModified: new Date().toISOString(),
-    changeFrequency: 'monthly' as const,
-    priority: 0.7,
-  }));
-
-  return [...routes, ...projectRoutes];
+  return [
+    {
+      url: baseUrl,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 1,
+    },
+    {
+      url: `${baseUrl}/about`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/projects`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/contact`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly',
+      priority: 0.5,
+    },
+    ...projectUrls,
+  ]
 }
